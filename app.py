@@ -66,6 +66,27 @@ def delete_user():
     conn.close()
     flash("User deleted successfully!", "info")
     return redirect(url_for("dashboard"))
+@app.route("/dashboard/delete_quiz", methods=["POST"])
+def delete_quiz():
+    quiz_id = request.form.get("quiz_id")
+    if not quiz_id:
+        flash("Quiz ID is required", "danger")
+        return redirect(url_for("dashboard"))
+
+    conn = get_db_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM quizzes WHERE id = %s", (quiz_id,))
+            conn.commit()
+            flash("Quiz deleted successfully!", "success")
+        except Exception as e:
+            flash(f"Error deleting quiz: {e}", "danger")
+        finally:
+            cursor.close()
+            conn.close()
+
+    return redirect(url_for("dashboard"))
 
 @app.route("/dashboard/download_results")
 def download_results():
